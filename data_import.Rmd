@@ -1,0 +1,70 @@
+---
+title: "Data Import"
+output: github_document
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+library(tidyverse)
+```
+
+## Import FAS Litters CSV
+
+```{r}
+
+litters_df = read_csv("data/FAS_litters.csv")
+
+litters_df = janitor:: clean_names(litters_df) #To only use the library in one line of code so library:: function (ie clean_names() is from library janitor and janitor is not imported into whole code)
+
+head(litters_df)
+tail(litters_df, 10)
+```
+
+## Learning Assessment
+
+Import data using relative paths
+
+```{r eval=FALSE}
+
+pups_df = read_csv("data/FAS_pups.csv")
+pups_df = janitor:: clean_names(pups_df)
+```
+
+Importing data using absolute paths will break the path everytime you move files. Use relative paths!!!
+
+
+## Look at read_csv option
+
+
+Skip rows using skip (1 indicates skip first row, 2 means skip first 2 rows, etc.)
+
+
+```{r}
+
+litters_df = read_csv (
+            file = "data/FAS_litters.csv",
+            skip = 1
+)
+```
+
+Define what values make the cells empty by using na ()
+
+```{r}
+
+litters_df = read_csv (
+            file = "data/FAS_litters.csv",
+            na = c("NA", "", ".")
+)
+```
+
+Change the column variable as a factor variable
+
+```{r}
+
+litters_df = read_csv (
+            file = "data/FAS_litters.csv",
+            na = c("NA", "", "."),
+            col_types = col(
+              Group = col_factor()
+            )
+)
+```
