@@ -4,7 +4,9 @@ output: github_document
 ---
 
 ```{r setup, echo = FALSE, message = FALSE}
-library(tidyverse)
+library(tidyverse) #read csv
+library(readxl) #read excel
+library(haven) #read SAS
 ```
 
 ## Import FAS Litters CSV
@@ -67,4 +69,16 @@ litters_df = read_csv (
               Group = col_factor()
             )
 )
+```
+
+## Import Excel
+```{r}
+
+mlb_df = read_excel("data/mlb11.xlsx", sheet = "mlb11")
+```
+
+## Import SAS
+```{r}
+
+pulse_df = read_sas("data/public_pulse_data.sas7bdat")
 ```
