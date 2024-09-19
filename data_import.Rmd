@@ -7,78 +7,111 @@ output: github_document
 library(tidyverse) #read csv, contains dplyr for data manipulation
 ```
 
-THis document will practice how to manipulate data
+This document will practice how to manipulate data
 
 ## Import FAS Litters CSV
 
 ```{r}
 
-litters_df = read_csv("data/FAS_litters.csv")
+litters_df = read_csv("data/FAS_litters.csv", na = c("NA", "", "."))
+litters_df = janitor::clean_names(litters_df) 
 
-litters_df = janitor:: clean_names(litters_df) #To only use the library in one line of code so library:: function (ie clean_names() is from library janitor and janitor is not imported into whole code)
+pups_df = read_csv("data/FAS_pups.csv", , na = c("NA", "", "."))
+pups_df = janitor::clean_names(pups_df)
 
-head(litters_df)
-tail(litters_df, 10)
 ```
 
-## Learning Assessment
 
-Import data using relative paths
+## Select
 
-```{r eval=FALSE}
-
-pups_df = read_csv("data/FAS_pups.csv")
-pups_df = janitor:: clean_names(pups_df)
-```
-
-Importing data using absolute paths will break the path everytime you move files. Use relative paths!!!
-
-
-## Look at read_csv option
-
-
-Skip rows using skip (1 indicates skip first row, 2 means skip first 2 rows, etc.)
-
+Use select() to select variable
 
 ```{r}
 
-litters_df = read_csv (
-            file = "data/FAS_litters.csv",
-            skip = 1
-)
-```
+select(litters_df, group, litter_number, gd0_weight) #select gd0 weight col, gets rid of everything else
 
-Define what values make the cells empty by using na ()
+```
 
 ```{r}
 
-litters_df = read_csv (
-            file = "data/FAS_litters.csv",
-            na = c("NA", "", ".")
-)
-```
+select(litters_df, group:gd18_weight) # select all cols from group to gd18 weight
 
-Change the column variable as a factor variable
+```
 
 ```{r}
 
-litters_df = read_csv (
-            file = "data/FAS_litters.csv",
-            na = c("NA", "", "."),
-            col_types = col(
-              Group = col_factor()
-            )
-)
+select(litters_df, -pups_survive) # take out pups survive column
+
 ```
 
-## Import Excel
 ```{r}
 
-mlb_df = read_excel("data/mlb11.xlsx", sheet = "mlb11")
+select(litters_df, starts_with("gd"))
+
+select(litters_df, contains("pups")) #Selects all columns with headers that contain "pups"
+
+select(litters_df, GROUP = group) #renames column "group" to "GROUP"
+
+select(litters_df, litter_number, gd0_weight, everything()) #relocates the columns by first col being litter #, second being gd0 weight, and shifting everything else to the right and keeping the same order
+
+relocate(litters_df, litter_number, gd0_weight) #relocate the litter number and gd0 weight to the first two columns, keeps everything else as is
 ```
 
-## Import SAS
 ```{r}
 
-pulse_df = read_sas("data/public_pulse_data.sas7bdat")
+filter(litters_df, gd_of_birth == 20) ##filters out all rows except those with a gd birth weight of 20; = must use double ==
+
+filter(litters_df, pups_born_alive > 8)
+
+filter(litters_df, pups_born_alive != 9) #not equal
+
+filter(litters_df, group == "Low8") # can use == for character variables
+
+filter(litters_df, group %in% c("Low7", "Low8")) #will show pups in group 7 or group 8; use %in c() to include all wanted variables, using == will not work anymore
+
+filter(litters_df, group %in% c("Low7", "Low8"), pups_born_alive == 8) #must satisfy both conditions
+
+drop_na(litters_df) # drops NA from whole dataframe
+
+drop_na(litters_df, gd0_weight) #drops NA from specified column
+
+# Learning Assesment
+filter(pups_df, sex == 1)
+filter(pups_df, pd_walk < 11, sex == 2)
+
+```
+##Mutate
+
+```{r}
+
+mutate(litters_df, wt_gain = gd18_weight - gd0_weight) # creates a new variable wt_gain by using existing columns
+
+mutate(litters_df, group = str_to_lower(group)) # overwrites group name 
+
+mutate(
+  litters_df,
+  wt_gain = gd18_weight - gd0_weight
+  group = str_to_lower(group)
+) #can group mutate directions into one function
+```
+
+##Arrange
+
+```{r}
+
+arrange(litters_df, gd0_weight) #sorts data from lowest gd0 weight to highest
+arrange(litters_df, desc(gd0_weight)) # sorts data from highest gd0 wight to lowest
+arrange(litters_df, pups_born_alive, gd0_weight) #sorts from puppies born alive then gd0 weight
+
+```
+##Piping
+
+```{r}
+litters_df = 
+  read_csv("data/FAS_litters.csv", na = c("NA", "", ".")) %>% 
+  janitor::clean_names() %>% 
+  select(-pups_born_alive) %>% 
+  filter(group == "Con7") %>% 
+  mutate( wt_gain = gd18_weight - gd0_weight)
+  
 ```
