@@ -1,13 +1,13 @@
 ---
-title: "Data Manipulation"
+title: "Data Import"
 output: github_document
 ---
 
 ```{r setup, echo = FALSE, message = FALSE}
-library(tidyverse) #read csv, contains dplyr for data manipulation
+library(tidyverse) #read csv
+library(readxl) #read excel
+library(haven) #read SAS
 ```
-
-THis document will practice how to manipulate data
 
 ## Import FAS Litters CSV
 
